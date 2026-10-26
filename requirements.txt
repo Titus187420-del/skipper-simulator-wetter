@@ -1,0 +1,9 @@
+# Pakete fuer wetter/baue_wetter.py (lokal in .venv, im Ablauf per pip).
+# GRIB2 wird mit cfgrib -> ecCodes gelesen. Das Paket "eccodes" bringt die
+# noetige Bibliothek selbst mit (eccodeslib), es muss nichts per brew/apt
+# installiert werden.
+requests==2.34.2
+numpy==2.5.4
+xarray==2026.9.0
+cfgrib==0.9.15.1
+eccodes==2.50.0

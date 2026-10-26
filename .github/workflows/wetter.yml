@@ -1,0 +1,74 @@
+name: Wetter fuer den Skipper Simulator
+
+# Fertig gebaut (25.10.2026), wartet auf das GitHub-Projekt. Diese Datei tut nichts, solange sie nicht
+# in ein GitHub-Projekt gelegt wird (siehe README, Abschnitt "Fuer den echten Betrieb").
+#
+# Alle drei Stunden: Wetter vom DWD holen, je Revier eine kleine JSON-Datei bauen.
+# Die Laeufe des DWD erscheinen 00/03/06/... UTC und sind etwa 2 bis 4 Stunden
+# spaeter fertig veroeffentlicht; deshalb 40 Minuten nach der vollen Stunde, und
+# das Skript nimmt von selbst den neuesten VOLLSTAENDIGEN Lauf.
+
+on:
+  schedule:
+    - cron: "40 1-23/3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: wetter
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  wetter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Auschecken
+        uses: actions/checkout@v5
+
+      - name: Python einrichten
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      # Das Paket "eccodes" bringt die ecCodes-Bibliothek selbst mit.
+      - name: Pakete installieren
+        run: python -m pip install -r requirements.txt
+
+      - name: Vorhersagen bauen
+        run: python wetter/baue_wetter.py
+
+      - name: Ergebnis zeigen
+        run: |
+          ls -l ausgabe
+          cat ausgabe/index.json
+
+      # Zum Nachsehen im GitHub-Projekt (7 Tage). Enthaelt keine Zugangsdaten.
+      - name: Ergebnis als Anhang ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: wetter-ausgabe
+          path: ausgabe/*.json
+          retention-days: 7
+
+      # Hochladen per FTPS auf den Webspace (huggie.de bei ALL-INKL). Die Zugangsdaten stehen NUR in den
+      # geheimen Werten des GitHub-Projekts (Settings > Secrets and variables > Actions), nie in dieser Datei.
+      # Der FTP-Zugang ist auf den Ordner skippersimulator/ beschraenkt; "wetter" ist RELATIV dazu.
+      - name: Auf den Webspace laden
+        env:
+          FTP_HOST: ${{ secrets.WETTER_FTP_HOST }}
+          FTP_USER: ${{ secrets.WETTER_FTP_USER }}
+          FTP_PASS: ${{ secrets.WETTER_FTP_PASS }}
+          FTP_REMOTE_DIR: wetter
+          WEATHER_OUT_DIR: ausgabe
+        run: python wetter/hochladen.py
+
+      # Gegenprobe: Jede Reviersdatei muss unter der oeffentlichen Adresse frisch sein (sonst rot) —
+      # ein falscher Zielordner bliebe sonst still gruen (Lehre aus BinnenSkipper, Juli 2026).
+      - name: Gegenprobe ueber die oeffentliche Adresse
+        run: |
+          python wetter/pruefe_veroeffentlicht.py --minuten 30 $(python -c "import json;print(' '.join('https://www.huggie.de/skippersimulator/wetter/'+r['name']+'.json' for r in json.load(open('konfig/reviere.json'))['reviere']))")

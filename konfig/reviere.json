@@ -1,0 +1,26 @@
+{
+  "_hinweis": "Ein Eintrag je Revier. Neues Revier = eine Zeile dazu, sonst nichts. 'modell': 'auto' nimmt ICON-D2, wenn der Punkt samt 0,2 Grad Umgebung im D2-Gebiet liegt, sonst ICON-EU. Mit 'icon-d2' oder 'icon-eu' laesst sich ein Modell erzwingen. Breite (lat), Laenge (lon) in Grad.",
+  "reviere": [
+    { "name": "chiemsee",    "lat": 47.87, "lon": 12.45, "modell": "auto" },
+    { "name": "tegernsee",   "lat": 47.72, "lon": 11.76, "modell": "auto" },
+    { "name": "starnberg",   "lat": 47.90, "lon": 11.32, "modell": "auto" },
+    { "name": "ammersee",    "lat": 48.00, "lon": 11.12, "modell": "auto" },
+    { "name": "brombachsee", "lat": 49.13, "lon": 10.93, "modell": "auto" },
+    { "name": "bodensee",    "lat": 47.60, "lon":  9.50, "modell": "auto" },
+    { "name": "gardasee",    "lat": 45.66, "lon": 10.70, "modell": "auto" },
+    { "name": "split",       "lat": 43.45, "lon": 16.45, "modell": "auto" },
+    { "name": "sibenik",     "lat": 43.73, "lon": 15.89, "modell": "auto" },
+    { "name": "zadar",       "lat": 44.12, "lon": 15.23, "modell": "auto" },
+    { "name": "kvarner",     "lat": 44.60, "lon": 14.60, "modell": "auto" },
+    { "name": "rijeka",      "lat": 45.15, "lon": 14.55, "modell": "auto" },
+    { "name": "pula",        "lat": 44.90, "lon": 13.90, "modell": "auto" },
+    { "name": "porec",       "lat": 45.25, "lon": 13.60, "modell": "auto" },
+    { "name": "slowenien",   "lat": 45.54, "lon": 13.65, "modell": "auto" },
+    { "name": "makarska",    "lat": 43.10, "lon": 17.20, "modell": "auto" },
+    { "name": "lastovo",     "lat": 42.77, "lon": 16.90, "modell": "auto" },
+    { "name": "mljet",       "lat": 42.76, "lon": 17.50, "modell": "auto" },
+    { "name": "dubrovnik",   "lat": 42.64, "lon": 18.10, "modell": "auto" },
+    { "name": "boka",        "lat": 42.43, "lon": 18.70, "modell": "auto" },
+    { "name": "bar",         "lat": 42.00, "lon": 19.10, "modell": "auto" }
+  ]
+}

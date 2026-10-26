@@ -1,0 +1,5 @@
+# Wetterdateien des Skipper Simulators: Das Spiel laeuft in der App als lokale Seite und darf die Dateien von hier laden.
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "*"
+  Header set Cache-Control "public, max-age=600"
+</IfModule>
