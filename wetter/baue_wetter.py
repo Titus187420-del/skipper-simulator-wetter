@@ -74,6 +74,7 @@ class Feld:
     d2: str           # Dateiteil bei ICON-D2
     eu: str           # Dateiteil bei ICON-EU
     pflicht: bool = False
+    ebene: Optional[int] = None   # Druckflaeche in hPa (pressure-level), sonst Bodenfeld (single-level)
 
 
 FELDER: List[Feld] = [
@@ -85,6 +86,9 @@ FELDER: List[Feld] = [
     Feld("ww", "2d_ww", "WW"),
     Feld("vis", "2d_vis", "VIS"),
     Feld("t_2m", "2d_t_2m", "T_2M"),
+    # Wind in 850 hPa (rund 1,5 km Hoehe): danach ziehen die Wolken im Spiel (29.10.2026). Kein Pflichtfeld — fehlt er, gilt der Bodenwind.
+    Feld("u", "u", "U", ebene=850),
+    Feld("v", "v", "V", ebene=850),
 ]
 
 
@@ -108,8 +112,12 @@ MODELLE = {"icon-d2": ICON_D2, "icon-eu": ICON_EU}
 
 def url_zu(modell: Modell, lauf: dt.datetime, feld: Feld, stunde: int) -> str:
     teil = feld.d2 if modell is ICON_D2 else feld.eu
-    name = (f"{modell.kurz}_{modell.gitter}_regular-lat-lon_single-level_"
-            f"{lauf:%Y%m%d%H}_{stunde:03d}_{teil}.grib2.bz2")
+    if feld.ebene:
+        name = (f"{modell.kurz}_{modell.gitter}_regular-lat-lon_pressure-level_"
+                f"{lauf:%Y%m%d%H}_{stunde:03d}_{feld.ebene}_{teil}.grib2.bz2")
+    else:
+        name = (f"{modell.kurz}_{modell.gitter}_regular-lat-lon_single-level_"
+                f"{lauf:%Y%m%d%H}_{stunde:03d}_{teil}.grib2.bz2")
     return f"{BASIS_URL}/{modell.kurz}/grib/{lauf:%H}/{feld.ordner}/{name}"
 
 
@@ -300,6 +308,7 @@ def stunden_fuer(punkt: str, lauf: dt.datetime, modell: Modell,
         wind_ms = math.hypot(u, v)
         # Meteorologisch: Richtung, AUS der der Wind kommt.
         aus = (math.degrees(math.atan2(-u, -v)) + 360.0) % 360.0
+        hu, hv = w("u", h), w("v", h)   # (Wind in 850 hPa, fuer die Wolken)
         gesamt, davor = w("tot_prec", h), w("tot_prec", h - 1)
         regen = None
         if gesamt is not None and davor is not None:
@@ -314,6 +323,8 @@ def stunden_fuer(punkt: str, lauf: dt.datetime, modell: Modell,
             "wolken": ganz(w("clct", h)),
             "code": ganz(w("ww", h)),
             "sicht": ganz(w("vis", h)),
+            "hwind": None if hu is None or hv is None else runde(math.hypot(hu, hv) * 3.6),
+            "haus": None if hu is None or hv is None else ganz((math.degrees(math.atan2(-hu, -hv)) + 360.0) % 360.0) % 360,
         })
     return zeilen
 

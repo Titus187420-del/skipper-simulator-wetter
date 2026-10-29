@@ -1,0 +1,37 @@
+name: Sturmwarnung Bodensee fuer den Skipper Simulator
+
+# Alle 10 Minuten (29.10.2026): echte Sturmwarnungen des DWD fuer die drei Warnbereiche des Bodensees
+# (wetter/sturmwarn_bodensee.py) -> skippersimulator/wetter/sturmwarn-bodensee.json. Der 3-Stunden-Takt der Vorhersage ist
+# dafuer zu langsam. Oeffentliches Projekt: Actions-Minuten sind frei. Gleiche geheime Werte wie wetter.yml.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sturmwarn
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sturmwarn:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Auschecken
+        uses: actions/checkout@v5
+
+      - name: Warnung holen
+        run: python3 wetter/sturmwarn_bodensee.py
+
+      - name: Auf den Webspace laden
+        env:
+          FTP_HOST: ${{ secrets.WETTER_FTP_HOST }}
+          FTP_USER: ${{ secrets.WETTER_FTP_USER }}
+          FTP_PASS: ${{ secrets.WETTER_FTP_PASS }}
+          FTP_REMOTE_DIR: wetter
+          WEATHER_OUT_DIR: ausgabe-sturm
+        run: python3 wetter/hochladen.py

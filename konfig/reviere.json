@@ -7,6 +7,8 @@
     { "name": "ammersee",    "lat": 48.00, "lon": 11.12, "modell": "auto" },
     { "name": "brombachsee", "lat": 49.13, "lon": 10.93, "modell": "auto" },
     { "name": "bodensee",    "lat": 47.60, "lon":  9.50, "modell": "auto" },
+    { "name": "bodensee_west", "lat": 47.72, "lon":  9.10, "modell": "auto" },
+    { "name": "bodensee_ost",  "lat": 47.52, "lon":  9.65, "modell": "auto" },
     { "name": "gardasee",    "lat": 45.66, "lon": 10.70, "modell": "auto" },
     { "name": "split",       "lat": 43.45, "lon": 16.45, "modell": "auto" },
     { "name": "sibenik",     "lat": 43.73, "lon": 15.89, "modell": "auto" },
